@@ -1,4 +1,6 @@
-﻿namespace DSA
+﻿using System.Diagnostics;
+
+namespace DSA
 {
     /// <summary>
     /// Represents a weighted grid graph node
@@ -28,7 +30,7 @@
         }
     }
 
-    public static class GridTraversalExtensions
+    public static class GridTraversal
     {
         /// <summary>
         /// Uses the A* pathfinding algorithm to find the shortest path between two points on a weighted grid
@@ -39,8 +41,15 @@
         /// <param name="endCol">The column value of the cell to end at</param>
         /// <param name="endRow">The row value of the cell to end at</param>
         /// <returns></returns>
-        public static IEnumerable<GridLocation> AStar(this Grid<WeightedNode> grid, int startCol, int startRow, int endCol, int endRow)
+        public static IEnumerable<GridLocation> AStar(Grid<WeightedNode> grid, int startCol, int startRow, int endCol, int endRow)
         {
+            if (startCol == endCol && startRow == endRow)
+            {
+                List<GridLocation> singlePath = new List<GridLocation>();
+                singlePath.Add(new GridLocation(startCol, startRow));
+                return singlePath;
+            }
+
             HashSet<GridLocation> visited = new HashSet<GridLocation>();
             HashSet<GridLocation> unvisited = new HashSet<GridLocation>();
 
@@ -129,6 +138,12 @@
                 }
             }
 
+            // A path was not found. Return an empty list instead
+            if (result.Count == 1 && result.Peek().Col == endCol && result.Peek().Row == endRow)
+            {
+                return new List<GridLocation>();
+            }
+
             return result;
         }
 
@@ -137,9 +152,8 @@
         /// </summary>
         /// <param name="contents"></param>
         /// <returns></returns>
-        public static Grid<WeightedNode> GridFromString(string contents)
+        public static Grid<WeightedNode> GridFromString(int size, string contents)
         {
-            int size = contents.Split("\n").Length;
             Grid<WeightedNode> grid = new Grid<WeightedNode>(size);
 
             int x = 0;
@@ -154,11 +168,11 @@
                         x = 0;
                         break;
                     case '1':
-                        grid.Set(x, y, new WeightedNode(1));
+                        grid.Set(x, y, new WeightedNode(float.PositiveInfinity));
                         x++;
                         break;
                     default:
-                        grid.Set(x, y, new WeightedNode(float.PositiveInfinity));
+                        grid.Set(x, y, new WeightedNode(1));
                         x++;
                         break;
                 }
