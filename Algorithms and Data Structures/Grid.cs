@@ -1,4 +1,7 @@
-﻿namespace DSA
+﻿// Author: Mathew Morales
+// Date: January 2023
+
+namespace DSA
 {
     public class GridLocation
     {
